@@ -34,7 +34,6 @@ require (
 )
 
 require (
-	github.com/accuknox/auto-policy-discovery/src v0.0.0-20220622153732-597108ffed2c
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/cilium/cilium-cli v0.11.5
 	github.com/fatih/color v1.13.0
@@ -62,6 +61,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.1.1 // indirect
 	github.com/Masterminds/sprig/v3 v3.2.2 // indirect
 	github.com/Masterminds/squirrel v1.5.2 // indirect
+	github.com/accuknox/auto-policy-discovery/src v0.0.0-20220622153732-597108ffed2c // indirect
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
