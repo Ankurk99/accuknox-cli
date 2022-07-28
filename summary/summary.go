@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	opb "github.com/accuknox/auto-policy-discovery/src/protobuf/v1/observability"
+	//opb "github.com/accuknox/auto-policy-discovery/src/protobuf/v1/observability"
 	"github.com/fatih/color"
 	"google.golang.org/grpc"
 )
@@ -38,7 +38,7 @@ func StartSummary(o Options) error {
 		}
 	}
 
-	data := &opb.LogsRequest{
+	data := &LogsRequest{
 		Label:     o.Labels,
 		Namespace: o.Namespace,
 	}
@@ -50,7 +50,7 @@ func StartSummary(o Options) error {
 	}
 	defer conn.Close()
 
-	client := opb.NewSummaryClient(conn)
+	client := NewSummaryClient(conn)
 
 	//Fetch Summary Logs
 	stream, err := client.FetchLogs(context.Background(), data)
@@ -122,20 +122,20 @@ func StartSummary(o Options) error {
 		tbl.Print()
 
 		//Print System Incoming connections
-		fmt.Println("\nList of Incoming server connections (" + fmt.Sprint(len(res.InServerConn)) + ") :\n")
-		tbl = Heading("ADDRESS-FAMILY", "PATH")
+		fmt.Println("\nList of Incoming connections (" + fmt.Sprint(len(res.InServerConn)) + ") :\n")
+		tbl = Heading("PROTOCOL", "IP/PATH", "PORT", "LABELS", "NAMESPACE")
 		tbl.WithHeaderFormatter(headerFmt)
 		for _, inConn := range res.InServerConn {
-			tbl.AddRow(inConn.AddressFamily, inConn.Path)
+			tbl.AddRow(inConn.Protocol, inConn.PodSvcIP, inConn.ServerPort, inConn.Labels, inConn.Namespace)
 		}
 		tbl.Print()
 
 		//Print System Outgoing connections
-		fmt.Println("\nList of Outgoing server connections (" + fmt.Sprint(len(res.OutServerConn)) + ") :\n")
-		tbl = Heading("ADDRESS-FAMILY", "PATH")
+		fmt.Println("\nList of Outgoing connections (" + fmt.Sprint(len(res.OutServerConn)) + ") :\n")
+		tbl = Heading("PROTOCOL", "IP/PATH", "PORT", "LABELS", "NAMESPACE")
 		tbl.WithHeaderFormatter(headerFmt)
 		for _, outConn := range res.OutServerConn {
-			tbl.AddRow(outConn.AddressFamily, outConn.Path)
+			tbl.AddRow(outConn.Protocol, outConn.PodSvcIP, outConn.ServerPort, outConn.Labels, outConn.Namespace)
 		}
 		tbl.Print()
 
