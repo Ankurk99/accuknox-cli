@@ -123,19 +123,19 @@ func StartSummary(o Options) error {
 
 		//Print System Incoming connections
 		fmt.Println("\nList of Incoming connections (" + fmt.Sprint(len(res.InServerConn)) + ") :\n")
-		tbl = Heading("PROTOCOL", "IP/PATH", "PORT", "LABELS", "NAMESPACE")
+		tbl = Heading("PROTOCOL", "COMMAND", "IP/PATH", "PORT", "LABELS", "NAMESPACE")
 		tbl.WithHeaderFormatter(headerFmt)
 		for _, inConn := range res.InServerConn {
-			tbl.AddRow(inConn.Protocol, inConn.PodSvcIP, inConn.ServerPort, inConn.Labels, inConn.Namespace)
+			tbl.AddRow(inConn.Protocol, inConn.Command, inConn.PodSvcIP, inConn.ServerPort, inConn.Labels, inConn.Namespace)
 		}
 		tbl.Print()
 
 		//Print System Outgoing connections
 		fmt.Println("\nList of Outgoing connections (" + fmt.Sprint(len(res.OutServerConn)) + ") :\n")
-		tbl = Heading("PROTOCOL", "IP/PATH", "PORT", "LABELS", "NAMESPACE")
+		tbl = Heading("PROTOCOL", "COMMAND", "IP/PATH", "PORT", "LABELS", "NAMESPACE")
 		tbl.WithHeaderFormatter(headerFmt)
 		for _, outConn := range res.OutServerConn {
-			tbl.AddRow(outConn.Protocol, outConn.PodSvcIP, outConn.ServerPort, outConn.Labels, outConn.Namespace)
+			tbl.AddRow(outConn.Protocol, outConn.Command, outConn.PodSvcIP, outConn.ServerPort, outConn.Labels, outConn.Namespace)
 		}
 		tbl.Print()
 

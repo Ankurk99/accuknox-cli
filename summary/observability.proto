@@ -54,4 +54,5 @@ message ServerConnections {
     string ServerPort = 3;
     string Labels = 4;
     string Namespace = 5;
+    string Command = 6;
 }
