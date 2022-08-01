@@ -19,9 +19,10 @@ import (
 
 // Options Structure
 type Options struct {
-	GRPC      string
-	Labels    string
-	Namespace string
+	GRPC         string
+	Labels       string
+	Namespace    string
+	RevDNSLookup bool
 }
 
 // StartSummary : Get summary on observability data
@@ -39,8 +40,9 @@ func StartSummary(o Options) error {
 	}
 
 	data := &LogsRequest{
-		Label:     o.Labels,
-		Namespace: o.Namespace,
+		Label:        o.Labels,
+		Namespace:    o.Namespace,
+		RevDNSLookup: o.RevDNSLookup,
 	}
 
 	// create a client

@@ -4,7 +4,7 @@
 // - protoc             v3.15.8
 // source: v1/observability/observability.proto
 
-package summary
+package summary		
 
 import (
 	context "context"
