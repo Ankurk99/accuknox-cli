@@ -20,6 +20,7 @@ import (
 // Options Structure
 type Options struct {
 	GRPC         string
+	Type         string
 	Labels       string
 	Namespace    string
 	RevDNSLookup bool
@@ -40,6 +41,7 @@ func StartSummary(o Options) error {
 	}
 
 	data := &LogsRequest{
+		Type:         o.Type,
 		Label:        o.Labels,
 		Namespace:    o.Namespace,
 		RevDNSLookup: o.RevDNSLookup,
@@ -73,74 +75,75 @@ func StartSummary(o Options) error {
 		fmt.Println("\nPod Name : ", res.PodDetail)
 		fmt.Println("\nNamespace : ", res.Namespace)
 		//Print List of Processes
-		fmt.Println("\nList of Processes (" + fmt.Sprint(len(res.ListOfProcess)) + ") :\n")
-		tbl := Heading("SOURCE", "DESTINATION", "COUNT", "LAST UPDATED TIME", "STATUS")
-		tbl.WithHeaderFormatter(headerFmt)
-		for _, process := range res.ListOfProcess {
-			for _, source := range process.ListOfDestination {
-				tbl.AddRow(process.Source, source.Destination, source.Count, time.Unix(source.LastUpdatedTime, 0).Format("1-02-2006 15:04:05"), strings.ToUpper(source.Status))
+		if o.Type == "process" {
+			fmt.Println("\nList of Processes (" + fmt.Sprint(len(res.ListOfProcess)) + ") :\n")
+			tbl := Heading("SOURCE", "DESTINATION", "COUNT", "LAST UPDATED TIME", "STATUS")
+			tbl.WithHeaderFormatter(headerFmt)
+			for _, process := range res.ListOfProcess {
+				for _, source := range process.ListOfDestination {
+					tbl.AddRow(process.Source, source.Destination, source.Count, time.Unix(source.LastUpdatedTime, 0).Format("1-02-2006 15:04:05"), strings.ToUpper(source.Status))
+				}
 			}
-		}
-		tbl.Print()
-
-		//Print List of File System
-		fmt.Println("\nList of File-system accesses (" + fmt.Sprint(len(res.ListOfFile)) + ") :\n")
-		tbl = Heading("SOURCE", "DESTINATION", "COUNT", "LAST UPDATED TIME", "STATUS")
-		tbl.WithHeaderFormatter(headerFmt)
-		for _, file := range res.ListOfFile {
-			for _, source := range file.ListOfDestination {
-				tbl.AddRow(file.Source, source.Destination, source.Count, time.Unix(source.LastUpdatedTime, 0).Format("1-02-2006 15:04:05"), strings.ToUpper(source.Status))
+			tbl.Print()
+		} else if o.Type == "file" {
+			//Print List of File System
+			fmt.Println("\nList of File-system accesses (" + fmt.Sprint(len(res.ListOfFile)) + ") :\n")
+			tbl := Heading("SOURCE", "DESTINATION", "COUNT", "LAST UPDATED TIME", "STATUS")
+			tbl.WithHeaderFormatter(headerFmt)
+			for _, file := range res.ListOfFile {
+				for _, source := range file.ListOfDestination {
+					tbl.AddRow(file.Source, source.Destination, source.Count, time.Unix(source.LastUpdatedTime, 0).Format("1-02-2006 15:04:05"), strings.ToUpper(source.Status))
+				}
 			}
-		}
-		tbl.Print()
-
-		//Print List of Network Connection
-		fmt.Println("\nList of Network connections (" + fmt.Sprint(len(res.ListOfNetwork)) + ") :\n")
-		tbl = Heading("SOURCE", "Protocol", "COUNT", "LAST UPDATED TIME", "STATUS")
-		tbl.WithHeaderFormatter(headerFmt)
-		for _, network := range res.ListOfNetwork {
-			for _, source := range network.ListOfDestination {
-				tbl.AddRow(network.Source, source.Destination, source.Count, time.Unix(source.LastUpdatedTime, 0).Format("1-02-2006 15:04:05"), strings.ToUpper(source.Status))
+			tbl.Print()
+		} else if o.Type == "network" {
+			//Print List of Network Connection
+			fmt.Println("\nList of Network connections (" + fmt.Sprint(len(res.ListOfNetwork)) + ") :\n")
+			tbl := Heading("SOURCE", "Protocol", "COUNT", "LAST UPDATED TIME", "STATUS")
+			tbl.WithHeaderFormatter(headerFmt)
+			for _, network := range res.ListOfNetwork {
+				for _, source := range network.ListOfDestination {
+					tbl.AddRow(network.Source, source.Destination, source.Count, time.Unix(source.LastUpdatedTime, 0).Format("1-02-2006 15:04:05"), strings.ToUpper(source.Status))
+				}
 			}
-		}
-		tbl.Print()
+			tbl.Print()
 
-		//Print Ingress Connections
-		fmt.Printf("\nIngress Connections :\n\n")
-		tbl = Heading("DESTINATION LABEL", "DESTINATION NAMESPACE", "PROTOCOL", "PORT", "COUNT", "LAST UPDATED TIME", "STATUS")
-		tbl.WithHeaderFormatter(headerFmt)
-		for _, ingress := range res.Ingress {
-			tbl.AddRow(ingress.DestinationLabels, ingress.DestinationNamespace, ingress.Protocol, ingress.Port, ingress.Count, time.Unix(ingress.LastUpdatedTime, 0).Format("1-02-2006 15:04:05"), ingress.Status)
-		}
-		tbl.Print()
+			//Print Ingress Connections
+			fmt.Printf("\nIngress Connections :\n\n")
+			tbl = Heading("DESTINATION LABEL", "DESTINATION NAMESPACE", "PROTOCOL", "PORT", "COUNT", "LAST UPDATED TIME", "STATUS")
+			tbl.WithHeaderFormatter(headerFmt)
+			for _, ingress := range res.Ingress {
+				tbl.AddRow(ingress.DestinationLabels, ingress.DestinationNamespace, ingress.Protocol, ingress.Port, ingress.Count, time.Unix(ingress.LastUpdatedTime, 0).Format("1-02-2006 15:04:05"), ingress.Status)
+			}
+			tbl.Print()
 
-		//Print Egress Connections
-		fmt.Printf("\nEgress Connections : \n\n")
-		tbl = Heading("DESTINATION LABEL", "DESTINATION NAMESPACE", "PROTOCOL", "PORT", "COUNT", "LAST UPDATED TIME", "STATUS")
-		tbl.WithHeaderFormatter(headerFmt)
-		for _, egress := range res.Egress {
-			tbl.AddRow(egress.DestinationLabels, egress.DestinationNamespace, egress.Protocol, egress.Port, egress.Count, time.Unix(egress.LastUpdatedTime, 0).Format("1-02-2006 15:04:05"), egress.Status)
-		}
-		tbl.Print()
+			//Print Egress Connections
+			fmt.Printf("\nEgress Connections : \n\n")
+			tbl = Heading("DESTINATION LABEL", "DESTINATION NAMESPACE", "PROTOCOL", "PORT", "COUNT", "LAST UPDATED TIME", "STATUS")
+			tbl.WithHeaderFormatter(headerFmt)
+			for _, egress := range res.Egress {
+				tbl.AddRow(egress.DestinationLabels, egress.DestinationNamespace, egress.Protocol, egress.Port, egress.Count, time.Unix(egress.LastUpdatedTime, 0).Format("1-02-2006 15:04:05"), egress.Status)
+			}
+			tbl.Print()
 
-		//Print System Incoming connections
-		fmt.Println("\nList of Incoming connections (" + fmt.Sprint(len(res.InServerConn)) + ") :\n")
-		tbl = Heading("PROTOCOL", "COMMAND", "IP/PATH", "PORT", "LABELS", "NAMESPACE")
-		tbl.WithHeaderFormatter(headerFmt)
-		for _, inConn := range res.InServerConn {
-			tbl.AddRow(inConn.Protocol, inConn.Command, inConn.PodSvcIP, inConn.ServerPort, inConn.Labels, inConn.Namespace)
-		}
-		tbl.Print()
+			//Print System Incoming connections
+			fmt.Println("\nList of Incoming connections (" + fmt.Sprint(len(res.InServerConn)) + ") :\n")
+			tbl = Heading("PROTOCOL", "COMMAND", "IP/PATH", "PORT", "LABELS", "NAMESPACE")
+			tbl.WithHeaderFormatter(headerFmt)
+			for _, inConn := range res.InServerConn {
+				tbl.AddRow(inConn.Protocol, inConn.Command, inConn.PodSvcIP, inConn.ServerPort, inConn.Labels, inConn.Namespace)
+			}
+			tbl.Print()
 
-		//Print System Outgoing connections
-		fmt.Println("\nList of Outgoing connections (" + fmt.Sprint(len(res.OutServerConn)) + ") :\n")
-		tbl = Heading("PROTOCOL", "COMMAND", "IP/PATH", "PORT", "LABELS", "NAMESPACE")
-		tbl.WithHeaderFormatter(headerFmt)
-		for _, outConn := range res.OutServerConn {
-			tbl.AddRow(outConn.Protocol, outConn.Command, outConn.PodSvcIP, outConn.ServerPort, outConn.Labels, outConn.Namespace)
+			//Print System Outgoing connections
+			fmt.Println("\nList of Outgoing connections (" + fmt.Sprint(len(res.OutServerConn)) + ") :\n")
+			tbl = Heading("PROTOCOL", "COMMAND", "IP/PATH", "PORT", "LABELS", "NAMESPACE")
+			tbl.WithHeaderFormatter(headerFmt)
+			for _, outConn := range res.OutServerConn {
+				tbl.AddRow(outConn.Protocol, outConn.Command, outConn.PodSvcIP, outConn.ServerPort, outConn.Labels, outConn.Namespace)
+			}
+			tbl.Print()
 		}
-		tbl.Print()
-
 	}
 	return nil
 }

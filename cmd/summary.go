@@ -25,7 +25,8 @@ var summaryCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(summaryCmd)
-	summaryCmd.Flags().StringVarP(&summaryOptions.Labels, "labels", "l", "", "Labels for resources")
+	summaryCmd.Flags().StringVar(&summaryOptions.Type, "type", "file", "Type of resources: file|process|network (Default: file)")
+	summaryCmd.Flags().StringVar(&summaryOptions.Labels, "labels", "", "Labels for resources")
 	summaryCmd.Flags().StringVarP(&summaryOptions.Namespace, "namespace", "n", "", "Namespace for resources")
 	summaryCmd.Flags().BoolVarP(&summaryOptions.RevDNSLookup, "rev-dns-lookup", "r", false, "Reverse DNS Lookup")
 }
